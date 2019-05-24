@@ -26,7 +26,8 @@ class RandomWordsState extends State<RandomWords> {
   Map sentence = {'hitokoto': '', 'from': ''};
   Map poetry = {'content': '', 'origin': '', 'author': ''};
   Map music = {'url': '', 'picUrl': '', 'author': '', 'name': ''};
-  AudioPlayer audioPlayer;
+  AudioPlayer audioPlayer = new AudioPlayer();
+  bool isPlaying = false;
 
   RandomWordsState() {
     _loadPicture();
@@ -266,6 +267,11 @@ class RandomWordsState extends State<RandomWords> {
   }
 
   _loadMusic() {
+    audioPlayer.onPlayerCompletion.listen((event) {
+      setState(() {
+        isPlaying = false;
+      });
+    });
     API.music().then((obj) {
       setState(() {
         print('---$obj');
@@ -278,17 +284,27 @@ class RandomWordsState extends State<RandomWords> {
     int result = await audioPlayer.play(music['url']);
     if (result == 1) {
       // success
-      print(1);
+      setState(() {
+        isPlaying = true;
+      });
+    }
+  }
+
+  pause() async {
+    int result = await audioPlayer.pause();
+    if (result == 1) {
+      setState(() {
+        isPlaying = false;
+      });
     }
   }
 
   _buildMusic() {
-    final int backgroundColor = 0xFFFFCDB2;
-    final int textColor = 0xFF6D6875;
+    final int backgroundColor = 0xFFD13C37;
+    final int textColor = 0xFF0D2C54;
     final height = MediaQuery.of(context).size.height;
-    audioPlayer = new AudioPlayer();
-    // var a= audioPlayer.play(music['url']);
-    print(audioPlayer);
+
+    print('isPlaying $isPlaying');
 
     return EasyRefresh(
       child: SingleChildScrollView(
@@ -316,13 +332,32 @@ class RandomWordsState extends State<RandomWords> {
                     child: Column(
                       children: <Widget>[
                         Padding(
-                            padding: EdgeInsets.fromLTRB(50, 0, 50, 30),
+                            padding: EdgeInsets.fromLTRB(50, 0, 50, 20),
                             child: Image.network(music['picUrl'])),
+                        (isPlaying
+                            ? IconButton(
+                                onPressed: pause,
+                                icon:
+                                    Icon(Icons.pause, color: Color(textColor)))
+                            : IconButton(
+                                onPressed: play,
+                                icon: Icon(Icons.play_arrow,
+                                    color: Color(textColor)))),
+                        Padding(
+                            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            child: Text(
+                              music['name'],
+                              style: TextStyle(
+                                  color: Color(textColor),
+                                  fontSize: 20,
+                                  height: 1.3,
+                                  fontWeight: FontWeight.bold),
+                            )),
                         Text(
-                          music['name'],
+                          music['author'],
                           style: TextStyle(
                             color: Color(textColor),
-                            fontSize: 15,
+                            fontSize: 13,
                             height: 1.3,
                           ),
                         )
