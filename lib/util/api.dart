@@ -31,7 +31,7 @@ class API {
   }
 
   static Future<Map> music() async {
-    var url = "https://music.aityp.com/playlist/detail?id=2623321493";
+    var url = "https://music.aityp.com/playlist/detail?id=145787433";
     String body = await Request.get(url);
     var obj = json.decode(body);
     var tracks = obj['playlist']['tracks'];
@@ -57,5 +57,27 @@ class API {
     var musicUrl = obj['data'][0]['url'];
 
     return musicUrl;
+  }
+
+  static Future<Map> musicComment() async {
+    var url = "https://api.comments.hk/";
+    String body = await Request.get(url);
+    var obj = json.decode(body);
+
+    return {
+      'comment': obj['comment_content'],
+      'nickname': obj['comment_nickname'],
+      'title': obj['title'],
+      'author': obj['author']
+    };
+  }
+
+  static Future<Map> randomColor() async {
+    String url = "https://randoma11y.com/stats";
+    String body = await Request.get(url);
+    Map obj = json.decode(body);
+    Map mostActive20 = obj['most_active_20'];
+
+    return mostActive20[0];
   }
 }

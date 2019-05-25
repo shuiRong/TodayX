@@ -1,7 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import './util/api.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_easyrefresh/material_header.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,29 +31,53 @@ class RandomWordsState extends State<RandomWords> {
   Map sentence = {'hitokoto': '', 'from': ''};
   Map poetry = {'content': '', 'origin': '', 'author': ''};
   Map music = {'url': '', 'picUrl': '', 'author': '', 'name': ''};
+  Map musicComment = {'comment': '', 'nickname': '', 'title': '', 'author': ''};
+  String math = '';
+
   AudioPlayer audioPlayer = new AudioPlayer();
   bool isPlaying = false;
+  GlobalKey<RefreshHeaderState> _headerKey1 =
+      new GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey2 =
+      new GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey3 =
+      new GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey4 =
+      new GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey5 =
+      new GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey6 =
+      new GlobalKey<RefreshHeaderState>();
 
-  RandomWordsState() {
+  RandomWordsState() {}
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('1111 ' + math);
     _loadPicture();
     _loadSentence();
     _loadPoetry();
     _loadMusic();
+    _loadMusicComment();
+    _loadMath();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: DefaultTabController(
-          length: 4,
+          length: 6,
           child: Scaffold(
             appBar: null,
             body: TabBarView(
               children: [
-                _buildSentence(),
-                _buildPoetry(),
                 _buildPicture(),
+                _buildSentence(),
                 _buildMusic(),
+                _buildMusicComment(),
+                _buildPoetry(),
+                _buildMath()
               ],
             ),
           ),
@@ -86,6 +115,9 @@ class RandomWordsState extends State<RandomWords> {
     final height = MediaQuery.of(context).size.height;
 
     return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey1,
+      ),
       child: SingleChildScrollView(
           child: Container(
               color: Color(backgroundColor),
@@ -112,7 +144,9 @@ class RandomWordsState extends State<RandomWords> {
                       children: <Widget>[
                         Padding(
                             padding: EdgeInsets.only(bottom: 50),
-                            child: Image.network(picture['url'])),
+                            child: (picture['url'].isNotEmpty
+                                ? Image.network(picture['url'])
+                                : null)),
                         Text(
                           picture['copyright'],
                           style: TextStyle(
@@ -141,11 +175,14 @@ class RandomWordsState extends State<RandomWords> {
   }
 
   _buildSentence() {
-    final int backgroundColor = 0xFF05668D;
-    final int textColor = 0xFFF0F3BD;
+    final int backgroundColor = 0xFF06AED5;
+    final int textColor = 0xFFFFF1D0;
     final height = MediaQuery.of(context).size.height;
 
     return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey4,
+      ),
       child: SingleChildScrollView(
           child: Container(
               color: Color(backgroundColor),
@@ -167,7 +204,7 @@ class RandomWordsState extends State<RandomWords> {
                         ),
                       )),
                   Padding(
-                    padding: EdgeInsets.only(bottom: height * 0.38),
+                    padding: EdgeInsets.only(bottom: height * 0.42),
                     child: Column(
                       children: <Widget>[
                         Padding(
@@ -205,6 +242,9 @@ class RandomWordsState extends State<RandomWords> {
     final height = MediaQuery.of(context).size.height;
 
     return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey2,
+      ),
       child: SingleChildScrollView(
           child: Container(
               color: Color(backgroundColor),
@@ -274,7 +314,6 @@ class RandomWordsState extends State<RandomWords> {
     });
     API.music().then((obj) {
       setState(() {
-        print('---$obj');
         music = obj;
       });
     });
@@ -304,9 +343,10 @@ class RandomWordsState extends State<RandomWords> {
     final int textColor = 0xFF0D2C54;
     final height = MediaQuery.of(context).size.height;
 
-    print('isPlaying $isPlaying');
-
     return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey3,
+      ),
       child: SingleChildScrollView(
           child: Container(
               color: Color(backgroundColor),
@@ -333,7 +373,9 @@ class RandomWordsState extends State<RandomWords> {
                       children: <Widget>[
                         Padding(
                             padding: EdgeInsets.fromLTRB(50, 0, 50, 20),
-                            child: Image.network(music['picUrl'])),
+                            child: music['picUrl'].isNotEmpty
+                                ? Image.network(music['picUrl'])
+                                : null),
                         (isPlaying
                             ? IconButton(
                                 onPressed: pause,
@@ -368,6 +410,151 @@ class RandomWordsState extends State<RandomWords> {
               )))),
       onRefresh: () async {
         _loadMusic();
+      },
+    );
+  }
+
+  // 网易云评论
+  _buildMusicComment() {
+    final int backgroundColor = 0xFF003049;
+    final int textColor = 0xFFEAE2B7;
+    final height = MediaQuery.of(context).size.height;
+
+    return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey5,
+      ),
+      child: SingleChildScrollView(
+          child: Container(
+              color: Color(backgroundColor),
+              height: height,
+              padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
+              alignment: Alignment.center,
+              child: Container(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        '评论',
+                        style: TextStyle(
+                          color: Color(textColor),
+                          fontSize: 15,
+                          height: 1.3,
+                        ),
+                      )),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: height * 0.32),
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                            padding: new EdgeInsets.only(bottom: 50),
+                            child: AutoSizeText(
+                              musicComment['comment'],
+                              style: TextStyle(
+                                color: Color(textColor),
+                                fontSize: 20.0,
+                                height: 1.3,
+                              ),
+                              maxLines: 5,
+                            )),
+                        Text(
+                          musicComment['nickname'],
+                          style: TextStyle(
+                            color: Color(textColor),
+                            fontSize: 15,
+                            height: 1.3,
+                          ),
+                        ),
+                        Text(
+                          musicComment['author'],
+                          style: TextStyle(
+                            color: Color(textColor),
+                            fontSize: 15,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              )))),
+      onRefresh: () async {
+        _loadMusicComment();
+      },
+    );
+  }
+
+  _loadMusicComment() {
+    API.musicComment().then((obj) {
+      setState(() {
+        musicComment = {
+          ...obj,
+          'author': '《' + obj['title'] + '》 —— ' + obj['author'],
+          'nickname': '@' + obj['nickname']
+        };
+      });
+    });
+  }
+
+  _loadMath() {
+    DefaultAssetBundle.of(context)
+        .loadString("./lib/assets/math.json")
+        .then((data) {
+      final result = json.decode(data);
+      String index = new Random().nextInt(8).toString();
+      setState(() {
+        math = result[index];
+      });
+    });
+  }
+
+  _buildMath() {
+    final int backgroundColor = 0xFFFFCDB2;
+    final int textColor = 0xFF6D6875;
+    final height = MediaQuery.of(context).size.height;
+
+    return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey6,
+      ),
+      child: SingleChildScrollView(
+          child: Container(
+              color: Color(backgroundColor),
+              height: height,
+              padding: EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+              alignment: Alignment.center,
+              child: Container(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        '高等数学',
+                        style: TextStyle(
+                          color: Color(textColor),
+                          fontSize: 15,
+                          height: 1.3,
+                        ),
+                      )),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: height * 0.4),
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 50),
+                            child: math == null
+                                ? null
+                                : Image.memory(Base64Decoder().convert(math))),
+                      ],
+                    ),
+                  )
+                ],
+              )))),
+      onRefresh: () async {
+        _loadMath();
       },
     );
   }
