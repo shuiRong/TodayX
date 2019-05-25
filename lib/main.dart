@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import './util/api.dart';
@@ -7,6 +6,8 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_easyrefresh/material_header.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() => runApp(MyApp());
 
@@ -45,7 +46,8 @@ class RandomWordsState extends State<RandomWords> {
     'description': '',
     'name': '',
     'url': '',
-    'star': ''
+    'stars': '',
+    'forks': ''
   };
 
   AudioPlayer audioPlayer = new AudioPlayer();
@@ -721,13 +723,13 @@ class RandomWordsState extends State<RandomWords> {
   }
 
   _buildRepo() {
-    final int backgroundColor = 0xFF003049;
-    final int textColor = 0xFFEAE2B7;
+    final int backgroundColor = 0xFF2541B2;
+    final int textColor = 0xFFFFFFFF;
     final height = MediaQuery.of(context).size.height;
 
     return EasyRefresh(
       refreshHeader: MaterialHeader(
-        key: _headerKey5,
+        key: _headerKey9,
       ),
       child: SingleChildScrollView(
           child: Container(
@@ -750,36 +752,56 @@ class RandomWordsState extends State<RandomWords> {
                         ),
                       )),
                   Padding(
-                    padding: EdgeInsets.only(bottom: height * 0.32),
+                    padding: EdgeInsets.only(bottom: height * 0.42),
                     child: Column(
                       children: <Widget>[
+                        new InkWell(
+                            child: Text(
+                              repo['name'],
+                              style: TextStyle(
+                                color: Color(textColor),
+                                fontSize: 20,
+                                height: 1.3,
+                              ),
+                            ),
+                            onTap: () => launch(repo['url'])),
                         Padding(
-                            padding: new EdgeInsets.only(bottom: 50),
+                            padding: new EdgeInsets.fromLTRB(0, 10, 0, 30),
                             child: AutoSizeText(
                               repo['description'],
                               style: TextStyle(
                                 color: Color(textColor),
-                                fontSize: 20.0,
+                                fontSize: 15,
                                 height: 1.3,
                               ),
                               maxLines: 5,
                             )),
-                        Text(
-                          repo['name'],
-                          style: TextStyle(
-                            color: Color(textColor),
-                            fontSize: 15,
-                            height: 1.3,
-                          ),
-                        ),
-                        Text(
-                          repo['author'],
-                          style: TextStyle(
-                            color: Color(textColor),
-                            fontSize: 15,
-                            height: 1.3,
-                          ),
-                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(Icons.star, color: Color(textColor)),
+                            Text(
+                              repo['stars'],
+                              style: TextStyle(
+                                color: Color(textColor),
+                                fontSize: 17,
+                                height: 1.2,
+                              ),
+                            ),
+                            Padding(
+                                padding: EdgeInsets.only(left: 20),
+                                child: Icon(AntDesign.getIconData("fork"),
+                                    color: Color(textColor), size: 17)),
+                            Text(
+                              repo['forks'],
+                              style: TextStyle(
+                                color: Color(textColor),
+                                fontSize: 17,
+                                height: 1.2,
+                              ),
+                            ),
+                          ],
+                        )
                       ],
                     ),
                   )

@@ -14,11 +14,15 @@ class API {
   static Future<Map> sentence() async {
     var url = "https://v1.hitokoto.cn/";
     String body = await Request.get(url);
-    var obj = json.decode(body);
-    var hitokoto = obj['hitokoto'];
-    var from = obj['from'];
+    try {
+      var obj = json.decode(body);
+      var hitokoto = obj['hitokoto'];
+      var from = obj['from'];
 
-    return {'hitokoto': hitokoto, 'from': from};
+      return {'hitokoto': hitokoto, 'from': from};
+    } catch (e) {
+      print('接口又返回html而不是json了');
+    }
   }
 
   static Future<Map> picture() async {
@@ -94,11 +98,14 @@ class API {
     String url = "https://github-trending-api.now.sh/repositories";
     String body = await Request.get(url);
     List list = json.decode(body);
-    Map repo = list[0];
+    int index = new Random().nextInt(25);
+    Map repo = list[index];
 
     return {
       ...repo,
-      'name': repo['author'] + ' / ' + repo['name']
+      'name': repo['author'] + ' / ' + repo['name'],
+      'stars': repo['stars'].toString(),
+      'forks': repo['forks'].toString()
     };
   }
 }
