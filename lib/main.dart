@@ -39,6 +39,14 @@ class RandomWordsState extends State<RandomWords> {
     'color_two_origin': '6D6875'
   };
   String math = '';
+  String chemical = '';
+  Map repo = {
+    'author': '',
+    'description': '',
+    'name': '',
+    'url': '',
+    'star': ''
+  };
 
   AudioPlayer audioPlayer = new AudioPlayer();
   bool isPlaying = false;
@@ -56,6 +64,10 @@ class RandomWordsState extends State<RandomWords> {
       new GlobalKey<RefreshHeaderState>();
   GlobalKey<RefreshHeaderState> _headerKey7 =
       new GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey8 =
+      new GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey9 =
+      new GlobalKey<RefreshHeaderState>();
 
   @override
   void didChangeDependencies() {
@@ -67,13 +79,15 @@ class RandomWordsState extends State<RandomWords> {
     _loadMusicComment();
     _loadMath();
     _loadRandomColor();
+    _loadChemical();
+    _loadRepo();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: DefaultTabController(
-          length: 7,
+          length: 9,
           child: Scaffold(
             appBar: null,
             body: TabBarView(
@@ -84,7 +98,9 @@ class RandomWordsState extends State<RandomWords> {
                 _buildMusicComment(),
                 _buildPoetry(),
                 _buildMath(),
-                _buildRandomColor()
+                _buildRandomColor(),
+                _buildChemical(),
+                _buildRepo()
               ],
             ),
           ),
@@ -585,7 +601,6 @@ class RandomWordsState extends State<RandomWords> {
           child: Container(
               color: Color(int.parse(randomColor['color_one'])),
               height: height,
-              padding: EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
               alignment: Alignment.center,
               child: Container(
                   child: Column(
@@ -602,11 +617,12 @@ class RandomWordsState extends State<RandomWords> {
                         ),
                       )),
                   Padding(
-                    padding: EdgeInsets.only(bottom: height * 0.4),
-                    child: Row(mainAxisSize: MainAxisSize.min  ,children: <Widget>[
+                    padding: EdgeInsets.only(bottom: height * 0.45),
+                    child:
+                        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                       Container(
                           height: 70,
-                          width: 150,
+                          width: 155,
                           child: Text(randomColor['color_two_origin'],
                               textAlign: TextAlign.center,
                               style: TextStyle(
@@ -619,7 +635,7 @@ class RandomWordsState extends State<RandomWords> {
                       Container(
                           color: Color(int.parse(randomColor['color_two'])),
                           height: 70,
-                          width: 150,
+                          width: 155,
                           child: Text(randomColor['color_one_origin'],
                               textAlign: TextAlign.center,
                               style: TextStyle(
@@ -637,5 +653,149 @@ class RandomWordsState extends State<RandomWords> {
         _loadRandomColor();
       },
     );
+  }
+
+  _loadChemical() {
+    DefaultAssetBundle.of(context)
+        .loadString("./lib/assets/chemical.json")
+        .then((data) {
+      final result = json.decode(data);
+      String index = new Random().nextInt(14).toString();
+      setState(() {
+        chemical = result[index];
+      });
+    });
+  }
+
+  _buildChemical() {
+    final int backgroundColor = 0xFFB2FF9E;
+    final int textColor = 0xFF3C1642;
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final width = size.width;
+
+    return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey8,
+      ),
+      child: SingleChildScrollView(
+          child: Container(
+              color: Color(backgroundColor),
+              height: height,
+              padding: EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+              alignment: Alignment.center,
+              child: Container(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        '化学方程式',
+                        style: TextStyle(
+                          color: Color(textColor),
+                          fontSize: 15,
+                          height: 1.3,
+                        ),
+                      )),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: height * 0.4),
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 50),
+                            child: chemical == null
+                                ? null
+                                : Image.memory(
+                                    Base64Decoder().convert(chemical),
+                                    width: width * 0.6)),
+                      ],
+                    ),
+                  )
+                ],
+              )))),
+      onRefresh: () async {
+        _loadChemical();
+      },
+    );
+  }
+
+  _buildRepo() {
+    final int backgroundColor = 0xFF003049;
+    final int textColor = 0xFFEAE2B7;
+    final height = MediaQuery.of(context).size.height;
+
+    return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey5,
+      ),
+      child: SingleChildScrollView(
+          child: Container(
+              color: Color(backgroundColor),
+              height: height,
+              padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
+              alignment: Alignment.center,
+              child: Container(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        'Github Repository',
+                        style: TextStyle(
+                          color: Color(textColor),
+                          fontSize: 15,
+                          height: 1.3,
+                        ),
+                      )),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: height * 0.32),
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                            padding: new EdgeInsets.only(bottom: 50),
+                            child: AutoSizeText(
+                              repo['description'],
+                              style: TextStyle(
+                                color: Color(textColor),
+                                fontSize: 20.0,
+                                height: 1.3,
+                              ),
+                              maxLines: 5,
+                            )),
+                        Text(
+                          repo['name'],
+                          style: TextStyle(
+                            color: Color(textColor),
+                            fontSize: 15,
+                            height: 1.3,
+                          ),
+                        ),
+                        Text(
+                          repo['author'],
+                          style: TextStyle(
+                            color: Color(textColor),
+                            fontSize: 15,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              )))),
+      onRefresh: () async {
+        _loadRepo();
+      },
+    );
+  }
+
+  _loadRepo() {
+    API.repo().then((obj) {
+      setState(() {
+        repo = obj;
+      });
+    });
   }
 }

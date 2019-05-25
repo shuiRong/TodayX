@@ -76,16 +76,29 @@ class API {
     String url = "https://randoma11y.com/stats";
     String body = await Request.get(url);
     Map obj = json.decode(body);
-    Map color = obj['most_active_20'][0];
+    int index = new Random().nextInt(20);
+    Map color = obj['most_active_20'][index];
 
-    String colorOne = color['color_one'];
-    String colorTwo = color['color_two'];
+    String colorOne = color['color_one'].toUpperCase();
+    String colorTwo = color['color_two'].toUpperCase();
 
     return {
       'color_one': '0xff' + colorOne.replaceAll(new RegExp('#'), ''),
       'color_two': '0xff' + colorTwo.replaceAll(new RegExp('#'), ''),
       'color_one_origin': colorOne,
       'color_two_origin': colorTwo,
+    };
+  }
+
+  static Future<Map> repo() async {
+    String url = "https://github-trending-api.now.sh/repositories";
+    String body = await Request.get(url);
+    List list = json.decode(body);
+    Map repo = list[0];
+
+    return {
+      ...repo,
+      'name': repo['author'] + ' / ' + repo['name']
     };
   }
 }
