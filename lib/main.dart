@@ -32,6 +32,12 @@ class RandomWordsState extends State<RandomWords> {
   Map poetry = {'content': '', 'origin': '', 'author': ''};
   Map music = {'url': '', 'picUrl': '', 'author': '', 'name': ''};
   Map musicComment = {'comment': '', 'nickname': '', 'title': '', 'author': ''};
+  Map randomColor = {
+    'color_one': '0xFFFFCDB2',
+    'color_two': '0xFF6D6875',
+    'color_one_origin': 'FFCDB2',
+    'color_two_origin': '6D6875'
+  };
   String math = '';
 
   AudioPlayer audioPlayer = new AudioPlayer();
@@ -48,26 +54,26 @@ class RandomWordsState extends State<RandomWords> {
       new GlobalKey<RefreshHeaderState>();
   GlobalKey<RefreshHeaderState> _headerKey6 =
       new GlobalKey<RefreshHeaderState>();
-
-  RandomWordsState() {}
+  GlobalKey<RefreshHeaderState> _headerKey7 =
+      new GlobalKey<RefreshHeaderState>();
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print('1111 ' + math);
     _loadPicture();
     _loadSentence();
     _loadPoetry();
     _loadMusic();
     _loadMusicComment();
     _loadMath();
+    _loadRandomColor();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: DefaultTabController(
-          length: 6,
+          length: 7,
           child: Scaffold(
             appBar: null,
             body: TabBarView(
@@ -77,7 +83,8 @@ class RandomWordsState extends State<RandomWords> {
                 _buildMusic(),
                 _buildMusicComment(),
                 _buildPoetry(),
-                _buildMath()
+                _buildMath(),
+                _buildRandomColor()
               ],
             ),
           ),
@@ -555,6 +562,79 @@ class RandomWordsState extends State<RandomWords> {
               )))),
       onRefresh: () async {
         _loadMath();
+      },
+    );
+  }
+
+  _loadRandomColor() {
+    API.randomColor().then((obj) {
+      setState(() {
+        randomColor = obj;
+      });
+    });
+  }
+
+  _buildRandomColor() {
+    final height = MediaQuery.of(context).size.height;
+
+    return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey7,
+      ),
+      child: SingleChildScrollView(
+          child: Container(
+              color: Color(int.parse(randomColor['color_one'])),
+              height: height,
+              padding: EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+              alignment: Alignment.center,
+              child: Container(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        '色彩',
+                        style: TextStyle(
+                          color: Color(int.parse(randomColor['color_two'])),
+                          fontSize: 15,
+                          height: 1.3,
+                        ),
+                      )),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: height * 0.4),
+                    child: Row(mainAxisSize: MainAxisSize.min  ,children: <Widget>[
+                      Container(
+                          height: 70,
+                          width: 150,
+                          child: Text(randomColor['color_two_origin'],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color:
+                                    Color(int.parse(randomColor['color_two'])),
+                                fontSize: 35,
+                                height: 1.45,
+                                fontWeight: FontWeight.bold,
+                              ))),
+                      Container(
+                          color: Color(int.parse(randomColor['color_two'])),
+                          height: 70,
+                          width: 150,
+                          child: Text(randomColor['color_one_origin'],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color:
+                                    Color(int.parse(randomColor['color_one'])),
+                                fontSize: 35,
+                                height: 1.45,
+                                fontWeight: FontWeight.bold,
+                              )))
+                    ]),
+                  )
+                ],
+              )))),
+      onRefresh: () async {
+        _loadRandomColor();
       },
     );
   }

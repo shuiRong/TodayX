@@ -76,8 +76,16 @@ class API {
     String url = "https://randoma11y.com/stats";
     String body = await Request.get(url);
     Map obj = json.decode(body);
-    Map mostActive20 = obj['most_active_20'];
+    Map color = obj['most_active_20'][0];
 
-    return mostActive20[0];
+    String colorOne = color['color_one'];
+    String colorTwo = color['color_two'];
+
+    return {
+      'color_one': '0xff' + colorOne.replaceAll(new RegExp('#'), ''),
+      'color_two': '0xff' + colorTwo.replaceAll(new RegExp('#'), ''),
+      'color_one_origin': colorOne,
+      'color_two_origin': colorTwo,
+    };
   }
 }
