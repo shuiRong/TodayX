@@ -36,7 +36,8 @@ class RandomWords extends StatefulWidget {
   RandomWordsState createState() => RandomWordsState();
 }
 
-class RandomWordsState extends State<RandomWords> {
+class RandomWordsState extends State<RandomWords>
+    with SingleTickerProviderStateMixin {
   Map picture = {'url': '', 'copyright': '', 'copyrightlink': ''};
   Map sentence = {'hitokoto': '', 'from': ''};
   Map poetry = {'content': '', 'origin': '', 'author': ''};
@@ -61,30 +62,26 @@ class RandomWordsState extends State<RandomWords> {
   Map zhihuDaily = {'title': ''};
   Map today = {'day': '', 'content': ''};
 
-  AudioPlayer audioPlayer = new AudioPlayer();
+  TabController _tabController;
+  AudioPlayer audioPlayer = AudioPlayer();
   bool isPlaying = false;
-  GlobalKey<RefreshHeaderState> _headerKey1 =
-      new GlobalKey<RefreshHeaderState>();
-  GlobalKey<RefreshHeaderState> _headerKey2 =
-      new GlobalKey<RefreshHeaderState>();
-  GlobalKey<RefreshHeaderState> _headerKey3 =
-      new GlobalKey<RefreshHeaderState>();
-  GlobalKey<RefreshHeaderState> _headerKey4 =
-      new GlobalKey<RefreshHeaderState>();
-  GlobalKey<RefreshHeaderState> _headerKey5 =
-      new GlobalKey<RefreshHeaderState>();
-  GlobalKey<RefreshHeaderState> _headerKey6 =
-      new GlobalKey<RefreshHeaderState>();
-  GlobalKey<RefreshHeaderState> _headerKey7 =
-      new GlobalKey<RefreshHeaderState>();
-  GlobalKey<RefreshHeaderState> _headerKey8 =
-      new GlobalKey<RefreshHeaderState>();
-  GlobalKey<RefreshHeaderState> _headerKey9 =
-      new GlobalKey<RefreshHeaderState>();
-  GlobalKey<RefreshHeaderState> _headerKey10 =
-      new GlobalKey<RefreshHeaderState>();
-  GlobalKey<RefreshHeaderState> _headerKey11 =
-      new GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey1 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey2 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey3 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey4 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey5 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey6 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey7 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey8 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey9 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey10 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey11 = GlobalKey<RefreshHeaderState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(vsync: this, length: 11);
+  }
 
   @override
   void didChangeDependencies() {
@@ -103,6 +100,21 @@ class RandomWordsState extends State<RandomWords> {
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Widget getListTile(String title, int index) {
+    return ListTile(
+      title: Text(title, style: TextStyle(color: Color(0xff9ABD97))),
+      onTap: () {
+        to(index);
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: DefaultTabController(
@@ -110,6 +122,7 @@ class RandomWordsState extends State<RandomWords> {
           child: Scaffold(
             appBar: null,
             body: TabBarView(
+              controller: _tabController,
               children: [
                 _buildPicture(),
                 _buildSentence(),
@@ -130,19 +143,106 @@ class RandomWordsState extends State<RandomWords> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              DrawerHeader(
-                child: Text('Drawer Header'),
+              Container(
+                color: Color(0xff9ABD97),
+                child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, 50, 0, 50),
+                    child: Text('今日份的X',
+                        style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white))),
+              ),
+              Container(
+                  margin: EdgeInsets.fromLTRB(10, 0, 0, 10),
+                  child: Column(children: <Widget>[
+                    ListTile(
+                      title: Text('图片'),
+                      onTap: () {
+                        to(0);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('名言'),
+                      onTap: () {
+                        to(1);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('音乐'),
+                      onTap: () {
+                        to(2);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('乐评'),
+                      onTap: () {
+                        to(3);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('诗歌'),
+                      onTap: () {
+                        to(4);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('高等数学'),
+                      onTap: () {
+                        to(5);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('色彩'),
+                      onTap: () {
+                        to(6);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('化学方程式'),
+                      onTap: () {
+                        to(7);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('Github Repository'),
+                      onTap: () {
+                        to(8);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('知乎日报'),
+                      onTap: () {
+                        to(9);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('历史上的今天'),
+                      onTap: () {
+                        to(10);
+                      },
+                    )
+                  ])),
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                    border: Border(
+                        top: BorderSide(color: Colors.black26, width: 0.7))),
+                child: ListTile(
+                  title: Text('关于'),
+                  onTap: () {
+                    launch('https://github.com/shuiRong/TodayX');
+                  },
                 ),
-              ),
-              ListTile(
-                title: Text('Item 2'),
-                onTap: () {},
-              ),
+              )
             ],
           ),
         ));
+  }
+
+  to(int where) {
+    Navigator.pop(context);
+    _tabController.animateTo(where);
   }
 
   _loadPicture() {
@@ -252,7 +352,7 @@ class RandomWordsState extends State<RandomWords> {
                     child: Column(
                       children: <Widget>[
                         Padding(
-                            padding: new EdgeInsets.only(bottom: 30),
+                            padding: EdgeInsets.only(bottom: 30),
                             child: Text(
                               sentence['hitokoto'],
                               style: TextStyle(
@@ -314,7 +414,7 @@ class RandomWordsState extends State<RandomWords> {
                     child: Column(
                       children: <Widget>[
                         Padding(
-                            padding: new EdgeInsets.only(bottom: 30),
+                            padding: EdgeInsets.only(bottom: 30),
                             child: Text(
                               poetry['content'],
                               style: TextStyle(
@@ -481,7 +581,7 @@ class RandomWordsState extends State<RandomWords> {
                   Padding(
                       padding: EdgeInsets.only(top: 40),
                       child: Text(
-                        '评论',
+                        '乐评',
                         style: TextStyle(
                           color: Color(textColor),
                           fontSize: 15,
@@ -493,7 +593,7 @@ class RandomWordsState extends State<RandomWords> {
                     child: Column(
                       children: <Widget>[
                         Padding(
-                            padding: new EdgeInsets.only(bottom: 50),
+                            padding: EdgeInsets.only(bottom: 50),
                             child: AutoSizeText(
                               musicComment['comment'],
                               style: TextStyle(
@@ -547,7 +647,7 @@ class RandomWordsState extends State<RandomWords> {
         .loadString("./lib/assets/math.json")
         .then((data) {
       final result = json.decode(data);
-      String index = new Random().nextInt(8).toString();
+      String index = Random().nextInt(8).toString();
       setState(() {
         math = result[index];
       });
@@ -681,7 +781,7 @@ class RandomWordsState extends State<RandomWords> {
         .loadString("./lib/assets/chemical.json")
         .then((data) {
       final result = json.decode(data);
-      String index = new Random().nextInt(14).toString();
+      String index = Random().nextInt(14).toString();
       setState(() {
         chemical = result[index];
       });
@@ -862,7 +962,7 @@ class RandomWordsState extends State<RandomWords> {
                   Padding(
                       padding: EdgeInsets.only(top: 40),
                       child: Text(
-                        '知乎',
+                        '知乎日报',
                         style: TextStyle(
                           color: Color(textColor),
                           fontSize: 15,
@@ -940,7 +1040,7 @@ class RandomWordsState extends State<RandomWords> {
                     child: Column(
                       children: <Widget>[
                         Padding(
-                            padding: new EdgeInsets.only(bottom: 30),
+                            padding: EdgeInsets.only(bottom: 30),
                             child: Text(
                               today['content'],
                               style: TextStyle(
