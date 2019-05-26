@@ -19,9 +19,10 @@ class API {
       var hitokoto = obj['hitokoto'];
       var from = obj['from'];
 
-      return {'hitokoto': hitokoto, 'from': from};
+      return {'hitokoto': hitokoto, 'from': '—— ' + from};
     } catch (e) {
       print('接口又返回html而不是json了');
+      return {'hitokoto': '', 'from': ''};
     }
   }
 
@@ -107,5 +108,18 @@ class API {
       'stars': repo['stars'].toString(),
       'forks': repo['forks'].toString()
     };
+  }
+
+  static Future<Map> zhihuDaily() async {
+    String url = "https://news-at.zhihu.com/api/4/news/latest";
+    String body = await Request.get(url);
+    Map data = json.decode(body);
+    List stories = data['stories'];
+    stories.addAll(data['top_stories']);
+    int index = new Random().nextInt(8);
+    Map repo = stories[index];
+
+    print('-------' + repo.toString());
+    return repo;
   }
 }

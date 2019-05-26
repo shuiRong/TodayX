@@ -8,8 +8,17 @@ import 'package:flutter_easyrefresh/material_header.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.black,
+    statusBarColor: Colors.transparent,
+  ));
+  debugPaintSizeEnabled = false;
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -49,6 +58,7 @@ class RandomWordsState extends State<RandomWords> {
     'stars': '',
     'forks': ''
   };
+  Map zhihuDaily = {'title': ''};
 
   AudioPlayer audioPlayer = new AudioPlayer();
   bool isPlaying = false;
@@ -70,6 +80,8 @@ class RandomWordsState extends State<RandomWords> {
       new GlobalKey<RefreshHeaderState>();
   GlobalKey<RefreshHeaderState> _headerKey9 =
       new GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey10 =
+      new GlobalKey<RefreshHeaderState>();
 
   @override
   void didChangeDependencies() {
@@ -83,13 +95,14 @@ class RandomWordsState extends State<RandomWords> {
     _loadRandomColor();
     _loadChemical();
     _loadRepo();
+    _loadZhihuDaily();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: DefaultTabController(
-          length: 9,
+          length: 10,
           child: Scaffold(
             appBar: null,
             body: TabBarView(
@@ -102,7 +115,8 @@ class RandomWordsState extends State<RandomWords> {
                 _buildMath(),
                 _buildRandomColor(),
                 _buildChemical(),
-                _buildRepo()
+                _buildRepo(),
+                _buildZhihuDaily()
               ],
             ),
           ),
@@ -164,11 +178,11 @@ class RandomWordsState extends State<RandomWords> {
                         ),
                       )),
                   Padding(
-                    padding: EdgeInsets.only(bottom: height * 0.25),
+                    padding: EdgeInsets.only(bottom: height * 0.3),
                     child: Column(
                       children: <Widget>[
                         Padding(
-                            padding: EdgeInsets.only(bottom: 50),
+                            padding: EdgeInsets.only(bottom: 30),
                             child: (picture['url'].isNotEmpty
                                 ? Image.network(picture['url'])
                                 : null)),
@@ -194,7 +208,7 @@ class RandomWordsState extends State<RandomWords> {
   _loadSentence() {
     API.sentence().then((obj) {
       setState(() {
-        sentence = {...obj, 'from': '—— ' + obj['from']};
+        sentence = obj;
       });
     });
   }
@@ -233,7 +247,7 @@ class RandomWordsState extends State<RandomWords> {
                     child: Column(
                       children: <Widget>[
                         Padding(
-                            padding: new EdgeInsets.only(bottom: 50),
+                            padding: new EdgeInsets.only(bottom: 30),
                             child: Text(
                               sentence['hitokoto'],
                               style: TextStyle(
@@ -263,7 +277,7 @@ class RandomWordsState extends State<RandomWords> {
 
   _buildPoetry() {
     final int backgroundColor = 0xFF6FFFE9;
-    final int textColor = 0xFF0B132B;
+    final int textColor = 0xFF292F36;
     final height = MediaQuery.of(context).size.height;
 
     return EasyRefresh(
@@ -291,11 +305,11 @@ class RandomWordsState extends State<RandomWords> {
                         ),
                       )),
                   Padding(
-                    padding: EdgeInsets.only(bottom: height * 0.42),
+                    padding: EdgeInsets.only(bottom: height * 0.40),
                     child: Column(
                       children: <Widget>[
                         Padding(
-                            padding: new EdgeInsets.only(bottom: 50),
+                            padding: new EdgeInsets.only(bottom: 30),
                             child: Text(
                               poetry['content'],
                               style: TextStyle(
@@ -755,7 +769,7 @@ class RandomWordsState extends State<RandomWords> {
                     padding: EdgeInsets.only(bottom: height * 0.42),
                     child: Column(
                       children: <Widget>[
-                        new InkWell(
+                        InkWell(
                             child: Text(
                               repo['name'],
                               style: TextStyle(
@@ -766,7 +780,7 @@ class RandomWordsState extends State<RandomWords> {
                             ),
                             onTap: () => launch(repo['url'])),
                         Padding(
-                            padding: new EdgeInsets.fromLTRB(0, 10, 0, 30),
+                            padding: EdgeInsets.fromLTRB(0, 10, 0, 30),
                             child: AutoSizeText(
                               repo['description'],
                               style: TextStyle(
@@ -817,6 +831,64 @@ class RandomWordsState extends State<RandomWords> {
     API.repo().then((obj) {
       setState(() {
         repo = obj;
+      });
+    });
+  }
+
+  _buildZhihuDaily() {
+    final int backgroundColor = 0xFF944BBB;
+    final int textColor = 0xFFE6C79C;
+    final height = MediaQuery.of(context).size.height;
+
+    return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey10,
+      ),
+      child: SingleChildScrollView(
+          child: Container(
+              color: Color(backgroundColor),
+              height: height,
+              padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
+              alignment: Alignment.center,
+              child: Container(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        '知乎',
+                        style: TextStyle(
+                          color: Color(textColor),
+                          fontSize: 15,
+                          height: 1.3,
+                        ),
+                      )),
+                  Padding(
+                      padding: EdgeInsets.only(bottom: height * 0.5),
+                      child: InkWell(
+                          child: Text(
+                            zhihuDaily['title'],
+                            style: TextStyle(
+                              color: Color(textColor),
+                              fontSize: 20,
+                              height: 1.3,
+                            ),
+                          ),
+                          onTap: () => launch('https://daily.zhihu.com/story/' +
+                              zhihuDaily["id"].toString())))
+                ],
+              )))),
+      onRefresh: () async {
+        _loadZhihuDaily();
+      },
+    );
+  }
+
+  _loadZhihuDaily() {
+    API.zhihuDaily().then((obj) {
+      setState(() {
+        zhihuDaily = obj;
       });
     });
   }
