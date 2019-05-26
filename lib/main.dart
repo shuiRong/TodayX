@@ -59,6 +59,7 @@ class RandomWordsState extends State<RandomWords> {
     'forks': ''
   };
   Map zhihuDaily = {'title': ''};
+  Map today = {'day': '', 'content': ''};
 
   AudioPlayer audioPlayer = new AudioPlayer();
   bool isPlaying = false;
@@ -82,6 +83,8 @@ class RandomWordsState extends State<RandomWords> {
       new GlobalKey<RefreshHeaderState>();
   GlobalKey<RefreshHeaderState> _headerKey10 =
       new GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey11 =
+      new GlobalKey<RefreshHeaderState>();
 
   @override
   void didChangeDependencies() {
@@ -96,13 +99,14 @@ class RandomWordsState extends State<RandomWords> {
     _loadChemical();
     _loadRepo();
     _loadZhihuDaily();
+    _loadTodayInHistory();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: DefaultTabController(
-          length: 10,
+          length: 11,
           child: Scaffold(
             appBar: null,
             body: TabBarView(
@@ -116,7 +120,8 @@ class RandomWordsState extends State<RandomWords> {
                 _buildRandomColor(),
                 _buildChemical(),
                 _buildRepo(),
-                _buildZhihuDaily()
+                _buildZhihuDaily(),
+                _buildTodayInHistory()
               ],
             ),
           ),
@@ -891,5 +896,75 @@ class RandomWordsState extends State<RandomWords> {
         zhihuDaily = obj;
       });
     });
+  }
+
+  _loadTodayInHistory() {
+    API.todayInHistory().then((obj) {
+      setState(() {
+        today = obj;
+      });
+    });
+  }
+
+  _buildTodayInHistory() {
+    final int backgroundColor = 0xFF06AED5;
+    final int textColor = 0xFFFFF1D0;
+    final height = MediaQuery.of(context).size.height;
+
+    return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey11,
+      ),
+      child: SingleChildScrollView(
+          child: Container(
+              color: Color(backgroundColor),
+              height: height,
+              padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
+              alignment: Alignment.center,
+              child: Container(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        '历史上的今天',
+                        style: TextStyle(
+                          color: Color(textColor),
+                          fontSize: 15,
+                          height: 1.3,
+                        ),
+                      )),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: height * 0.42),
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                            padding: new EdgeInsets.only(bottom: 30),
+                            child: Text(
+                              today['content'],
+                              style: TextStyle(
+                                color: Color(textColor),
+                                fontSize: 22.0,
+                                height: 1.3,
+                              ),
+                            )),
+                        Text(
+                          today['day'],
+                          style: TextStyle(
+                            color: Color(textColor),
+                            fontSize: 15,
+                            height: 1.3,
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              )))),
+      onRefresh: () async {
+        _loadTodayInHistory();
+      },
+    );
   }
 }

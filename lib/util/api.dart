@@ -119,7 +119,16 @@ class API {
     int index = new Random().nextInt(8);
     Map repo = stories[index];
 
-    print('-------' + repo.toString());
     return repo;
+  }
+
+  static Future<Map> todayInHistory() async {
+    String url = "https://api.ooopn.com/history/api.php?type=json";
+    String body = await Request.get(url);
+    Map data = json.decode(body);
+    List content = data['content'];
+    int index = new Random().nextInt(content.length);
+
+    return {'day': data['day'], 'content': content[index]};
   }
 }
