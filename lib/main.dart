@@ -1078,7 +1078,7 @@ class RandomWordsState extends State<RandomWords>
     );
   }
 
-  _loadOneArticle(){
+  _loadOneArticle() {
     API.oneArticle().then((result) {
       setState(() {
         oneArticle = result;
@@ -1099,7 +1099,7 @@ class RandomWordsState extends State<RandomWords>
         height: height,
         alignment: Alignment.center,
         child: Container(
-          padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+          padding: EdgeInsets.fromLTRB(20, 30, 20, 0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -1108,20 +1108,28 @@ class RandomWordsState extends State<RandomWords>
                 oneArticle['title'],
                 style: TextStyle(
                   color: Color(textColor),
-                  fontSize: 18,
+                  fontSize: 23,
                 ),
               ),
               //作者
-              Text(
-                oneArticle['author'],
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                child: Text(
+                  oneArticle['author'],
+                  style: TextStyle(
+                    color: Color(textColor),
+                  ),
+                ),
               ),
               //正文
               Expanded(
                 child: SingleChildScrollView(
+                  padding: EdgeInsets.only(bottom: 30),
                   child: Text(
                     oneArticle['content'],
                     style: TextStyle(
                       fontSize: 16,
+                      color: Color(textColor),
                     ),
                   ),
                 ),

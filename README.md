@@ -2,7 +2,7 @@
 
 > 这是一个`Flutter`写的**一个无聊的App**
 >
-> **每天推荐一个不同的：图片、诗歌、名言、音乐、乐评、高等数学、两种配色、化学方程式、Github Repo、知乎问题。**
+> **每天推荐一个不同的：图片、诗歌、名言、音乐、乐评、高等数学、两种配色、化学方程式、Github Repo、知乎问题、文章。**
 >
 > （P.S. 除图片来自Bing首页，每天仅有一张外，其他页面支持下拉刷新来更新内容）
 
@@ -126,6 +126,7 @@ flutter run
 * 音乐：`https://music.aityp.com/playlist/detail?id=145787433`
 
   ```
+  // 详细接口文档见：https://binaryify.github.io/NeteaseCloudMusicApi
   内容过多不便展示
   ```
 
@@ -239,7 +240,7 @@ flutter run
       "wc": 1963
     }
   }
-  ```  
+  ```
   > 解析：  
   >   
   > date：日期  
