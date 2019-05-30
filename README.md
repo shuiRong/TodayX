@@ -6,7 +6,7 @@
 >
 > （P.S. 除图片来自Bing首页，每天仅有一张外，其他页面支持下拉刷新来更新内容）
 
-**[下载APK](https://github.com/shuiRong/TodayX/releases/download/v1.0.0/TodayX.apk)**
+**[下载APK](https://github.com/shuiRong/TodayX/releases)**
 
 
 
