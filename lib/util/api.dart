@@ -131,4 +131,19 @@ class API {
 
     return {'day': data['day'], 'content': content[index]};
   }
+
+  static Future<Map> oneArticle() async {
+    var url = "https://interface.meiriyiwen.com/article/today?dev=1";
+    String body = await Request.get(url);
+    var obj = json.decode(body);
+    String content = obj['data']['content'];
+    content = content.replaceAll('\<\/p\>','');
+    content = content.replaceFirst('\<p\>','        ');
+    content = content.replaceAll('\<p\>','\n        ');
+    return {
+      'author': obj['data']['author'],
+      'title': obj['data']['title'],
+      'content': content
+    };
+  }
 }
