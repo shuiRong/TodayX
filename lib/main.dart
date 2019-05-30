@@ -61,6 +61,7 @@ class RandomWordsState extends State<RandomWords>
   };
   Map zhihuDaily = {'title': ''};
   Map today = {'day': '', 'content': ''};
+  Map oneArticle = {'author': '', 'title': '', 'content': ''};
 
   TabController _tabController;
   AudioPlayer audioPlayer = AudioPlayer();
@@ -76,11 +77,12 @@ class RandomWordsState extends State<RandomWords>
   GlobalKey<RefreshHeaderState> _headerKey9 = GlobalKey<RefreshHeaderState>();
   GlobalKey<RefreshHeaderState> _headerKey10 = GlobalKey<RefreshHeaderState>();
   GlobalKey<RefreshHeaderState> _headerKey11 = GlobalKey<RefreshHeaderState>();
+  GlobalKey<RefreshHeaderState> _headerKey12 = GlobalKey<RefreshHeaderState>();
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 11);
+    _tabController = TabController(vsync: this, length: 12);
   }
 
   @override
@@ -97,6 +99,7 @@ class RandomWordsState extends State<RandomWords>
     _loadRepo();
     _loadZhihuDaily();
     _loadTodayInHistory();
+    _loadOneArticle();
   }
 
   @override
@@ -118,7 +121,7 @@ class RandomWordsState extends State<RandomWords>
   Widget build(BuildContext context) {
     return Scaffold(
         body: DefaultTabController(
-          length: 11,
+          length: 12,
           child: Scaffold(
             appBar: null,
             body: TabBarView(
@@ -134,7 +137,8 @@ class RandomWordsState extends State<RandomWords>
                 _buildChemical(),
                 _buildRepo(),
                 _buildZhihuDaily(),
-                _buildTodayInHistory()
+                _buildTodayInHistory(),
+                _buildOneArticle(),
               ],
             ),
           ),
@@ -220,6 +224,12 @@ class RandomWordsState extends State<RandomWords>
                       title: Text('历史上的今天'),
                       onTap: () {
                         to(10);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('文章'),
+                      onTap: () {
+                        to(11);
                       },
                     )
                   ])),
@@ -1064,6 +1074,64 @@ class RandomWordsState extends State<RandomWords>
               )))),
       onRefresh: () async {
         _loadTodayInHistory();
+      },
+    );
+  }
+
+  _loadOneArticle(){
+    API.oneArticle().then((result) {
+      setState(() {
+        oneArticle = result;
+      });
+    });
+  }
+
+  _buildOneArticle() {
+    final int textColor = 0xFFFFF1D0;
+    final height = MediaQuery.of(context).size.height;
+
+    return EasyRefresh(
+      refreshHeader: MaterialHeader(
+        key: _headerKey12,
+      ),
+      child: Container(
+        color: Colors.blueGrey,
+        height: height,
+        alignment: Alignment.center,
+        child: Container(
+          padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              //标题
+              Text(
+                oneArticle['title'],
+                style: TextStyle(
+                  color: Color(textColor),
+                  fontSize: 18,
+                ),
+              ),
+              //作者
+              Text(
+                oneArticle['author'],
+              ),
+              //正文
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    oneArticle['content'],
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      onRefresh: () async {
+        _loadOneArticle();
       },
     );
   }
